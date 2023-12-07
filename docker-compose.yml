@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  reddit_collector:
+    build: reddit_collector/
+    volumes:
+    - ./reddit_collector/:/app
+    depends_on:
+    - my_mongo
+    env_file:
+    - cred.env
+  
+  my_mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+
+  etl:
+    build: etl_job
+    volumes:
+      - ./etl_job/:/app
+    depends_on:
+      - my_mongo
+      - my_postgres
+
+  my_postgres:
+    image: postgres
+    ports:
+      - 5555:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=reddits_pgdb
+
+
+
+
